@@ -71,5 +71,3 @@ def guardar_resultats(train_losses_all, test_metrics_all):
     with pd.ExcelWriter('/Users/aina/Desktop/TFG/codi/resultats') as writer:
         df_losses.to_excel(writer, sheet_name='Train Losses', index=False)
         df_test.to_excel(writer, sheet_name='Test Results', index=False)
-
-    print(f"\n✅ Resultats guardats a: {'/Users/aina/Desktop/TFG/codi/resultats'}")
