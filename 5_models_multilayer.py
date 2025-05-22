@@ -31,16 +31,7 @@ for i in range(adj_all.shape[0]):
     data = Data(x=x, edge_index=edge_index, y=y)
     data_list.append(data)
 
-data_list_balanced = funcions.smote_graph_level(data_list, target_class=0, target_total=199)
-data_list_balanced = [d for d in data_list_balanced if d.y.item() == 0] + [d for d in data_list_balanced if d.y.item() == 1]
-dataset = funcions.MyGraphDataset(data_list_balanced)
-
-print(f'\nDataset: {dataset}')
-print('-----------------------')
-print(f'Number of graphs: {len(dataset)}')
-print(f'Number of nodes: {dataset[0].x.shape[0]}')
-print(f'Number of features: {dataset.num_features}')
-print(f'Number of classes: {dataset.num_classes}')
+dataset = funcions.smote_graph_level(data_list, target_class=0, target_total=199)
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------  
 train_dataset, val_dataset, test_dataset = funcions.balancejar_dataset(dataset)
