@@ -53,21 +53,25 @@ def balancejar_dataset(dataset):
     return train_dataset, val_dataset, test_dataset
 
 
-def guardar_resultats(train_losses_all, test_metrics_all):
-    max_epochs = max(len(losses) for losses in train_losses_all.values())
-    df_losses = pd.DataFrame({'Epoch': list(range(1, max_epochs + 1))})
+def guardar_resultats(train_losses_all, test_metrics_all, path):
+    models = list(train_losses_all.keys())
+    num_epochs = len(next(iter(train_losses_all.values())))
+    epochs = list(range(1, num_epochs + 1))
+    df_train = pd.DataFrame({'epoch': epochs})
+    for model in models:
+        df_train[f'{model}_train_loss'] = train_losses_all[model]
 
-    for model_name, losses in train_losses_all.items():
-        padded_losses = losses + [None] * (max_epochs - len(losses))
-        df_losses[f'{model_name} Train Loss'] = padded_losses
-
-    test_data = []
-    for model_name, metrics in test_metrics_all.items():
-        row = {'Model': model_name}
-        row.update(metrics)
-        test_data.append(row)
-    df_test = pd.DataFrame(test_data)
-
-    with pd.ExcelWriter('/Users/aina/Desktop/TFG/codi/resultats') as writer:
-        df_losses.to_excel(writer, sheet_name='Train Losses', index=False)
-        df_test.to_excel(writer, sheet_name='Test Results', index=False)
+    test_data = {'epoch': 'TEST'}
+    for model in models:
+        metrics = test_metrics_all[model]
+        test_data[f'{model}_train_loss'] = metrics['test_loss'] 
+        test_data[f'{model}_test_acc'] = metrics['test_acc']
+        test_data[f'{model}_test_rec_pos'] = metrics['test_rec_pos']
+        test_data[f'{model}_test_rec_neg'] = metrics['test_rec_neg']
+    
+    df_test = pd.DataFrame([test_data])
+    for col in df_test.columns:
+        if col not in df_train.columns:
+            df_train[col] = None
+    df_all = pd.concat([df_train, df_test], ignore_index=True)
+    df_all.to_csv(path, index=False)
