@@ -66,26 +66,6 @@ for i, batch in enumerate(test_loader):
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------  
 
-for i in range(10):
-    gat = GNN.GAT(dataset, dim_in=7, dim_h=128, dim_out=2)
-    print('GAT:', i)
-    gat, gat_losses = GNN.train(gat, train_loader, val_loader, epochs=100)
-    gat_test_loss, gat_test_acc, gat_test_rec_pos, gat_test_rec_neg = GNN.test(gat, test_loader)
-    print(f'Test Loss: {gat_test_loss:.2f} | Test Acc: {gat_test_acc*100:.2f}% | '
-        f'Test Recall Pos: {gat_test_rec_pos*100:.2f}% | Test Recall Neg: {gat_test_rec_neg*100:.2f}%\n') 
-
-    torch.save(gat.state_dict(), f'/Users/aina/Desktop/TFG/codi/models_pesos/gat_best{i}.pt')
-    plt.figure(figsize=(8, 5))
-    plt.plot([loss.detach().item() for loss in gat_losses], label='Train Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Train Loss over Epochs')
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(f'/Users/aina/Desktop/TFG/codi/resultats/multiplex/gat_loss{i}.png', dpi=300, bbox_inches='tight')
-    #plt.show()
-
 
 t0 = time.time() 
 gcn = GNN.GCN(dataset, dim_h = 128)    
