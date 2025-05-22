@@ -33,37 +33,40 @@ class GCN(torch.nn.Module):
 class GIN(torch.nn.Module):
     """GIN"""
     def __init__(self, dataset, dim_h):
-        super(GIN, self).__init__()
+        super(GIN, self).__init__() 
         self.conv1 = GINConv(
-            Sequential(Linear(dataset.num_node_features, dim_h),
-                       BatchNorm1d(dim_h), ReLU(),
-                       Linear(dim_h, dim_h), ReLU()))
+            Sequential(
+                Linear(dataset.num_node_features, dim_h),
+                BatchNorm1d(dim_h),
+                ReLU(),
+                Linear(dim_h, dim_h),
+                ReLU()
+            )
+        ) 
         self.conv2 = GINConv(
-            Sequential(Linear(dim_h, dim_h), BatchNorm1d(dim_h), ReLU(),
-                       Linear(dim_h, dim_h), ReLU()))
-        self.conv3 = GINConv(
-            Sequential(Linear(dim_h, dim_h), BatchNorm1d(dim_h), ReLU(),
-                       Linear(dim_h, dim_h), ReLU()))
-        self.lin1 = Linear(dim_h*3, dim_h*3)
-        self.lin2 = Linear(dim_h*3, dataset.num_classes)
+            Sequential(
+                Linear(dim_h, dim_h),
+                BatchNorm1d(dim_h),
+                ReLU(),
+                Linear(dim_h, dim_h),
+                ReLU()
+            )
+        ) 
+        self.lin1 = Linear(dim_h * 2, dim_h * 2)
+        self.lin2 = Linear(dim_h * 2, dataset.num_classes)
 
-    def forward(self, x, edge_index, batch):
-        # Node embeddings 
+    def forward(self, x, edge_index, batch): 
         h1 = self.conv1(x, edge_index)
-        h2 = self.conv2(h1, edge_index)
-        h3 = self.conv3(h2, edge_index)
-        # Graph-level readout
-        h1 = global_add_pool(h1, batch)
-        h2 = global_add_pool(h2, batch)
-        h3 = global_add_pool(h3, batch)
-        # Concatenate graph embeddings
-        h = torch.cat((h1, h2, h3), dim=1)
-        # Classifier
+        h2 = self.conv2(h1, edge_index) 
+        g1 = global_add_pool(h1, batch)
+        g2 = global_add_pool(h2, batch) 
+        h = torch.cat((g1, g2), dim=1) 
         h = self.lin1(h)
-        h = h.relu()
+        h = F.relu(h)
         h = F.dropout(h, p=0.5, training=self.training)
         h = self.lin2(h)
         return F.log_softmax(h, dim=1)
+
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------  
 
@@ -74,21 +77,15 @@ class GAT(torch.nn.Module):
         self.gat2 = GATv2Conv(dim_h * heads, dim_h, heads=1)
         self.lin = Linear(dim_h, dim_out)
 
-    def forward(self, x, edge_index, batch):
-        # Capes GAT
+    def forward(self, x, edge_index, batch): 
         h = F.dropout(x, p=0.6, training=self.training)
         h = self.gat1(h, edge_index)
         h = F.relu(h)
         h = F.dropout(h, p=0.6, training=self.training)
-        h = self.gat2(h, edge_index)
-
-        # Pooling a nivell de graf
-        hG = global_mean_pool(h, batch)
-
-        # Classificador
+        h = self.gat2(h, edge_index) 
+        hG = global_mean_pool(h, batch) 
         h = F.dropout(hG, p=0.5, training=self.training)
-        h = self.lin(h)
-
+        h = self.lin(h) 
         return F.log_softmax(h, dim=1)
     
 #--------------------------------------------------------------------------------------------------------------------------------------------------  
