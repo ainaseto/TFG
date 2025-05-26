@@ -9,14 +9,6 @@ import random
 from sklearn.model_selection import StratifiedShuffleSplit
 import pandas as pd
 
-
-class MyGraphDataset(InMemoryDataset):
-    def __init__(self, data_list):
-        super().__init__('.', None, None, None)
-        self.data, self.slices = self.collate(data_list)
-    
-    def get(self, idx):
-        return super().get(idx)
     
 
 def smote_graph_level(data_list, target_class=0, target_total=200):
