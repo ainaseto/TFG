@@ -11,13 +11,13 @@ from sklearn.metrics import confusion_matrix
 
 class GCN(torch.nn.Module):
     """GCN"""
-    def __init__(self, dataset, dim_h):
+    def __init__(self, dim_h):
         super(GCN, self).__init__()
-        self.conv1 = GCNConv(dataset.num_node_features, dim_h)
-        self.lin = Linear(dim_h, dataset.num_classes)
+        self.conv1 = GCNConv(7, dim_h)
+        self.lin = Linear(dim_h, 2)
 
-    def forward(self, x, edge_index, batch):
-        h = self.conv1(x, edge_index)
+    def forward(self, x, edge_index, batch, edge_weight):
+        h = self.conv1(x, edge_index, edge_weight)
         h = h.relu()
         # Graph-level readout
         hG = global_mean_pool(h, batch)
@@ -32,11 +32,11 @@ class GCN(torch.nn.Module):
 
 class GIN(torch.nn.Module):
     """GIN"""
-    def __init__(self, dataset, dim_h):
+    def __init__(self, dim_h):
         super(GIN, self).__init__() 
         self.conv1 = GINConv(
             Sequential(
-                Linear(dataset.num_node_features, dim_h),
+                Linear(7, dim_h),
                 BatchNorm1d(dim_h),
                 ReLU(),
                 Linear(dim_h, dim_h),
@@ -53,9 +53,9 @@ class GIN(torch.nn.Module):
             )
         ) 
         self.lin1 = Linear(dim_h * 2, dim_h * 2)
-        self.lin2 = Linear(dim_h * 2, dataset.num_classes)
+        self.lin2 = Linear(dim_h * 2, 2)
 
-    def forward(self, x, edge_index, batch): 
+    def forward(self, x, edge_index, batch, edge_weigh=None): 
         h1 = self.conv1(x, edge_index)
         h2 = self.conv2(h1, edge_index) 
         g1 = global_add_pool(h1, batch)
@@ -71,22 +71,24 @@ class GIN(torch.nn.Module):
 #--------------------------------------------------------------------------------------------------------------------------------------------------  
 
 class GAT(torch.nn.Module):
-    def __init__(self, dataset, dim_in, dim_h, dim_out, heads=8):
+    def __init__(self, dim_in, dim_h, dim_out, heads=8):
         super().__init__()
-        self.gat1 = GATv2Conv(dim_in, dim_h, heads=heads)
-        self.gat2 = GATv2Conv(dim_h * heads, dim_h, heads=1)
+        # edge_dim=1 perquè edge_weight és un escalar per aresta
+        self.gat1 = GATv2Conv(dim_in, dim_h, heads=heads, edge_dim=1)
+        self.gat2 = GATv2Conv(dim_h * heads, dim_h, heads=1, edge_dim=1)
         self.lin = Linear(dim_h, dim_out)
 
-    def forward(self, x, edge_index, batch): 
+    def forward(self, x, edge_index, batch, edge_weight): 
         h = F.dropout(x, p=0.6, training=self.training)
-        h = self.gat1(h, edge_index)
-        h = F.relu(h)
+        h = self.gat1(h, edge_index, edge_weight)  # edge_weight és edge_attr
+        h = F.elu(h)
         h = F.dropout(h, p=0.6, training=self.training)
-        h = self.gat2(h, edge_index) 
+        h = self.gat2(h, edge_index, edge_weight)
         hG = global_mean_pool(h, batch) 
         h = F.dropout(hG, p=0.5, training=self.training)
         h = self.lin(h) 
         return F.log_softmax(h, dim=1)
+
     
 #--------------------------------------------------------------------------------------------------------------------------------------------------  
 
@@ -109,7 +111,7 @@ def train(model, loader, val_loader, epochs):
         # Train on batches
         for data in loader:
             optimizer.zero_grad()
-            out = model(data.x, data.edge_index, data.batch)
+            out = model(data.x, data.edge_index, data.batch, data.edge_weight)
             loss = criterion(out, data.y)
             total_loss += loss / len(loader)
             acc += accuracy(out.argmax(dim=1), data.y) / len(loader)
@@ -140,7 +142,7 @@ def test(model, loader):
     rec_pos = 0 
     rec_neg = 0
     for data in loader:
-        out = model(data.x, data.edge_index, data.batch)
+        out = model(data.x, data.edge_index, data.batch, data.edge_weight)
         loss += criterion(out, data.y) / len(loader)
         acc += accuracy(out.argmax(dim=1), data.y) / len(loader)
         rec_pos += recall_positiu(out.argmax(dim=1), data.y) / len(loader)
