@@ -9,24 +9,6 @@ import random
 from sklearn.model_selection import StratifiedShuffleSplit
 import pandas as pd
 
-    
-
-def smote_graph_level(data_list, target_class=0, target_total=200):
-    class_data = [d for d in data_list if d.y.item() == target_class]
-    current_num = len(class_data)
-    needed = target_total - current_num
-    new_graphs = []
-    for _ in range(needed):
-        g1, g2 = random.sample(class_data, 2)
-        assert g1.x.size() == g2.x.size()
-        alpha = random.uniform(0, 1)
-        new_x = g1.x * (1 - alpha) + g2.x * alpha
-        new_edge_index = g1.edge_index  
-        new_y = torch.tensor([target_class], dtype=torch.long)
-        new_data = Data(x=new_x, edge_index=new_edge_index, y=new_y)
-        new_graphs.append(new_data)
-    return data_list + new_graphs
-
 
 def balancejar_dataset(dataset):
     etiquetes = np.array([data.y.item() for data in dataset])
