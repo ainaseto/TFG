@@ -1,3 +1,4 @@
+
 import torch
 torch.manual_seed(0)
 import numpy as np
@@ -78,28 +79,7 @@ for i, batch in enumerate(test_loader):
 
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------  
-'''
-for i in range(10):
-    gcn = GNN.GCN(dim_h = 32)    
-    print('GCN:', i)
-    gcn, gcn_losses = GNN.train(gcn, train_loader, val_loader, epochs=100)
-    gcn_test_loss, gcn_test_acc, gcn_test_rec_pos, gcn_test_rec_neg = GNN.test(gcn, test_loader)
-    print(f'Test Loss: {gcn_test_loss:.2f} | Test Acc: {gcn_test_acc*100:.2f}% | '
-        f'Test Recall Pos: {gcn_test_rec_pos*100:.2f}% | Test Recall Neg: {gcn_test_rec_neg*100:.2f}%\n') 
 
-    torch.save(gcn.state_dict(), f'/Users/aina/Desktop/TFG/codi/models_pesos/gcn_best{i}.pt')
-    plt.figure(figsize=(8, 5))
-    plt.plot([loss.detach().item() for loss in gcn_losses], label='Train Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Train Loss over Epochs')
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(f'/Users/aina/Desktop/TFG/codi/resultats/multiplex/gcn_loss{i}.png', dpi=300, bbox_inches='tight')
-    #plt.show()
-
-'''
 
 t0 = time.time() 
 gcn = GNN.GCN(dim_h = 128)    
@@ -198,5 +178,3 @@ test_metrics_all = {
 }
 
 funcions.guardar_resultats(train_losses_all, test_metrics_all, '/Users/aina/Desktop/TFG/codi/resultats/multiplex/resultats_multiplex.csv')
-
-#--------------------------------------------------------------------------------------------------------------------------------------------------  
