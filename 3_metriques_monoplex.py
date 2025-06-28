@@ -53,9 +53,9 @@ def get_metric_values(em, METRIC=None):
     np.savetxt(file_metric, values, delimiter=",", fmt='%1.8f') # export
     return(values)
 
-multilayer = np.load("xarxes/monoplex.npy")
+monoplex = np.load("xarxes/monoplex.npy")
 lst_metrics = ["Strength", "Degree", "Clustering", "ClosenessCentrality", "BetweennessCentrality", "PageRank", "LocalEfficiency"]
 for metrica in lst_metrics:
-    get_metric_values(multilayer, METRIC=metrica)
+    get_metric_values(monoplex, METRIC=metrica)
     
 print("    Process finished successfully!")
