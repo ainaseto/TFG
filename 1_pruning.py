@@ -78,3 +78,4 @@ mascara_FA = veins_FA(veins, fa_xarxa)
 np.save("mascares/mascara_GM.npy", mascara_GM)
 np.save("mascares/mascara_RS.npy", mascara_RS)
 np.save("mascares/mascara_FA.npy", mascara_FA)
+
