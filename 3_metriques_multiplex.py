@@ -71,9 +71,7 @@ def get_metric_values(em, METRIC=None):
                 raise Exception("ERROR: Incorrect metric value! (METRIC is {})".format(METRIC))
         except Exception as e:
                 return None
-    
-        # Interlink
-        # interlink: folding results to get 76 nodes (instead of 152)
+
         if bool_reshape:
             temp2 = temp.reshape((76,3), order='F')
             temp3 = np.sum(temp2, axis=1) # sum values
