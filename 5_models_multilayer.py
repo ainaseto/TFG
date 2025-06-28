@@ -55,18 +55,6 @@ for k in range(adj_all.shape[0]):
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------  
 train_dataset, val_dataset, test_dataset = funcions.balancejar_dataset(data_list)
-from collections import Counter
-
-def comptar_0s_i_1s(dataset, nom):
-    y_values = [data.y.item() for data in dataset]
-    comptador = Counter(y_values)
-    print(f"\n{nom}:")
-    print(f"  Classe 0: {comptador.get(0, 0)}")
-    print(f"  Classe 1: {comptador.get(1, 0)}")
-
-comptar_0s_i_1s(train_dataset, "Train")
-comptar_0s_i_1s(val_dataset, "Validation")
-comptar_0s_i_1s(test_dataset, "Test")
 
 print(f'\nTraining set   = {len(train_dataset)} graphs')
 print(f'Validation set = {len(val_dataset)} graphs')
@@ -133,7 +121,6 @@ plt.tight_layout()
 plt.savefig('/Users/aina/Desktop/TFG/codi/resultats/multilayer/gin_loss.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-
 t0 = time.time()
 gat = GNN.GAT(dim_in=7, dim_h=128, dim_out=2)
 print('GAT:')
@@ -185,5 +172,3 @@ test_metrics_all = {
 }
 
 funcions.guardar_resultats(train_losses_all, test_metrics_all, '/Users/aina/Desktop/TFG/codi/resultats/multilayer/resultats_multilayer.csv')
-
-
