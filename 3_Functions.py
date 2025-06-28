@@ -96,3 +96,24 @@ def compute_A_min(A):
     """
     return A_min
 
+
+def compute_A_min_multiplex(A):
+    num_layers = 3
+    num_nodes = 76
+    A_min = np.zeros((num_nodes, num_nodes), dtype=float)
+    for i in range(num_nodes):
+        for j in range(num_nodes):
+            dist_values = []
+            for l1 in range(num_layers):
+                for l2 in range(num_layers):
+                    idx_i = i + l1 * num_nodes
+                    idx_j = j + l2 * num_nodes
+                    value = A[idx_i, idx_j]
+                    if value != 0:
+                        dist_values.append(value)
+            if dist_values:
+                A_min[i, j] = np.min(dist_values)
+            else:
+                A_min[i, j] = 0 
+    return A_min
+
