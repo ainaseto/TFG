@@ -1,7 +1,5 @@
-
 import networkx as nx
 import numpy as np
-
 
 def compute_CC_ML(G):
     """
