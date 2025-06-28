@@ -76,7 +76,6 @@ for i, batch in enumerate(test_loader):
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------  
 
-
 t0 = time.time() 
 gcn = GNN.GCN(dim_h = 128)    
 print('GCN:')
@@ -173,7 +172,5 @@ test_metrics_all = {
 }
 
 funcions.guardar_resultats(train_losses_all, test_metrics_all, '/Users/aina/Desktop/TFG/codi/resultats/monoplex/resultats_monoplex.csv')
-
-#--------------------------------------------------------------------------------------------------------------------------------------------------  
 
 #source /Users/aina/Desktop/TFG/codi/tfg_env/bin/activate
