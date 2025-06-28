@@ -53,7 +53,7 @@ def construccio_monoplex(GM, RS, FA):
     return em
 
 
-def plot_ml_matrices(em, titol):
+def plot_matrius(em, titol):
     num_subjs = em.shape[0]
     n_rows = 1
     n_cols = 4
@@ -92,12 +92,13 @@ multilayer = construccio_multilayer(GM, RS, FA)
 multiplex = construccio_multiplex(GM, RS, FA)
 monoplex = construccio_monoplex(GM, RS, FA)
 
-plot_ml_matrices(multilayer, 'multilayer')
-plot_ml_matrices(multiplex, 'multiplex')
-plot_ml_matrices(monoplex, 'monoplex')
+plot_matrius(multilayer, 'multilayer')
+plot_matrius(multiplex, 'multiplex')
+plot_matrius(monoplex, 'monoplex')
 
 np.save("xarxes/multilayer.npy", multilayer)
 np.save("xarxes/multiplex.npy", multiplex)
 np.save("xarxes/monoplex.npy", monoplex)
+
 
 
